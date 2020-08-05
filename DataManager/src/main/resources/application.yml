@@ -1,0 +1,9 @@
+server:
+  port: 8089
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: jimin5238
+    url: jdbc:mysql://localhost:3306/electric_data?serverTimezone=UTC\&characterEncoding=UTF-8
+    username: root
