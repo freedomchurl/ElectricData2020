@@ -13,7 +13,11 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vaninside.smartelecsystem.datamanager.service.DataService;
 
 @RestController
+@EnableAutoConfiguration
 public class DataController {
 	
 	@Autowired
@@ -31,9 +36,11 @@ public class DataController {
 	private static final String MQTT_PUBLISHER_ID = "electric-data-server";
     private static final String MQTT_SERVER_ADDRES= "tcp://127.0.0.1:1883";
     public static IMqttClient instance;
-    
+   
+
 	public DataController() throws MqttException{
 		init();
+		
 	}
 	
 	public void init() throws MqttException{
@@ -75,7 +82,7 @@ public class DataController {
 	@RequestMapping(value="/control", method=RequestMethod.POST)
 	public HashMap<String, Object> control(@RequestBody String msg) throws IOException, ClassNotFoundException, SQLException {
 		boolean result = service.sendControlData(msg);
-		
+
 		// return json
 		HashMap<String, Object> hashMap = new HashMap<String, Object>();
         hashMap.put("status", result?1:0);
