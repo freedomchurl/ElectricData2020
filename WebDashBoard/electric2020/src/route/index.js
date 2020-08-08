@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
+import MainPage from '../Main.vue'
 
 Vue.use(VueRouter)
 
@@ -15,42 +16,42 @@ const route = [
     //   //com`1ponent:InitialFormVue
     // },
     {
-      path:'',
-      component:this
+      path:'/',
+      component: MainPage
     },
-    {
-      path:'/loginProject',
-      component:LoginPage,
-      name:'login'
-    },
-    {
-      path:'/main',
-      component:MainPage,
-      name:'main',
-      children:[
-        {
-          path:'list',
-          component:MenuList
-        },
-        {
-          path:'admin',
-          component:MenuManager
-        },
-        {
-          path:'analytic',
-          component:MenuAnalytic
-        },
-        {
-          path:'group',
-          component:MenuGroup
-        }
-      ]
-    },
-    {
-      path:'/initProject',
-      component:InitialPage,
-      name:'init'
-    }
+    // {
+    //   path:'/loginProject',
+    //   component:LoginPage,
+    //   name:'login'
+    // },
+    // {
+    //   path:'/main',
+    //   component:MainPage,
+    //   name:'main',
+    //   children:[
+    //     {
+    //       path:'list',
+    //       component:MenuList
+    //     },
+    //     {
+    //       path:'admin',
+    //       component:MenuManager
+    //     },
+    //     {
+    //       path:'analytic',
+    //       component:MenuAnalytic
+    //     },
+    //     {
+    //       path:'group',
+    //       component:MenuGroup
+    //     }
+    //   ]
+    // },
+    // {
+    //   path:'/initProject',
+    //   component:InitialPage,
+    //   name:'init'
+    // }
 ];
 
 

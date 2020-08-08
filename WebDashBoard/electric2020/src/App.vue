@@ -7,6 +7,9 @@
     <MenuComponent></MenuComponent>
     <!-- <MainComponent></MainComponent> -->
     <router-view></router-view>
+    <footer>
+      지민이 이쁘다.
+    </footer>
   </div>
 </template>
 
