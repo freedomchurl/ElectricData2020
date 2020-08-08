@@ -23,7 +23,7 @@ export default {
     font-family: 'Noto Sans KR', sans-serif;
     height: 3rem;
     padding: 0rem 0rem 0rem 1.5rem;
-    margin:1rem 1.5rem 4rem 1.5rem;
+    margin:1rem 1.5rem 2rem 1.5rem;
     background-color:rgb(98,98,98);
     display:flex;
     box-shadow: 2px 2px 2px 2px #232323;

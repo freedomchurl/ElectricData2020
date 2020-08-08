@@ -1,9 +1,7 @@
 <template>
   <div id="main">
       <div id="timezone">
-          <button class="timeclass">1시간</button>
-          <button class="timeclass">2시간</button>
-          <button class="timeclass">1일</button>
+          <button v-bind:class="timebutton" v-for="(time,index) in timelist" v-bind:key="index">{{time}}</button>
       </div>
       <div>
           <h2>실시간 전력 생산량</h2>
@@ -27,7 +25,8 @@
 export default {
   data(){
     return {
-      logo : 3//require('../../../static/img/smartwatch.png')
+      timelist:['1시간','2시간','3시간','6시간','1일'],
+      timebutton:'timeclass btn btn-light btn-sm'
     }
   }
 }
@@ -52,7 +51,8 @@ export default {
     justify-content: flex-end;
   }
   .timeclass{
-
+    width: 5rem;
+    margin: 3px;
   }
 
 </style>
