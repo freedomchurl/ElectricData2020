@@ -65,5 +65,4 @@ export default {
   .menubutton:hover{
     color:rgb(135,192,25)
   }
-
 </style>
