@@ -1,6 +1,6 @@
 <template>
   <div id="back">
-      <button v-bind:class="menubutton" v-for="(menuname,index) in menulist" v-bind:key="index">{{menuname}}</button>
+      <button v-on:click="clickmenu(index)" v-bind:class="menubutton" v-for="(menuname,index) in menulist" v-bind:key="index">{{menuname}}</button>
   </div>
 </template>
 
@@ -10,9 +10,16 @@ export default {
     return {
       menulist:['프로슈머 리스트','실시간 그래프','예측 그래프'],
       menubutton:'menubutton',
+      routemenu:['/prosumer','/live','/predict']
   
     }
-  }
+  },
+  methods: {
+    clickmenu(index){
+      console.log('Push Menu');
+      this.$router.push(this.routemenu[index]).catch(()=>{});
+    }
+  },
 }
 </script>
 
