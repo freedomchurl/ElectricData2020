@@ -31,3 +31,18 @@
 
 - mysql> create table userdata (pID varchar(100), output double, demand double, storage double, time timestamp DEFAULT NOW());
 
+  
+
+#### 3. controldata ( 제어 데이터 )
+
+| 컬럼명        | 내용                  | 설명                     |
+| ------------- | --------------------- | ------------------------ |
+| pID           | prosumer id           | foreign key              |
+| sales         | 판매량                | double                   |
+| storage       | 저장량                | double                   |
+| purchase_town | 타운 내 구매량        | double                   |
+| purchase_ex   | 전력거래소부터 구매량 | double                   |
+| time          | 시간                  | timestamp, DEFAULT NOW() |
+
+- mysql> create table controldata (pID varchar(100), storage double, sales double, purchase_town double, purchase_ex double, time timestamp DEFAULT NOW());
+
