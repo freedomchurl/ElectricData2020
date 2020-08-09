@@ -11,10 +11,23 @@
 # MySQL DB 설계
 
 ### 테이블 Scheme
-#### prosumer_info ( 프로슈머의 기본적인 정보가 들어있음 )
+#### 1. prosumer_info ( 프로슈머의 기본적인 정보가 들어있음 )
 
 |컬럼명|내용|설명|
 |------|---|---|
-|id|prosumer id|autoincrement, primary key|
-|테스트1|테스트2|테스트3|
-|테스트1|테스트2|테스트3|
+|pID|prosumer id|autoincrement, primary key|
+|name|prosumer name|varchar(100)|
+|memo|prosumer memo|varchar(4000)|
+
+#### 2. userdata ( 유저로부터 받은 데이터 )
+
+| 컬럼명  | 내용        | 설명                     |
+| ------- | ----------- | ------------------------ |
+| pID     | prosumer id | foreign key              |
+| output  | 생산량      | double                   |
+| demand  | 수요량      | double                   |
+| storage | 저장량      | Double                   |
+| time    | 시간        | Timestamp, DEFAULT NOW() |
+
+- mysql> create table userdata (pID varchar(100), output double, demand double, storage double, time timestamp DEFAULT NOW());
+
