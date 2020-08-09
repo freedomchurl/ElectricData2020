@@ -22,19 +22,39 @@
 
 * RQ01
 
-  | 요청 URL      | Type | Parameter | 응답 |
-  | ------------- | ---- | --------- | ---- |
-  | /prosumer/all | GET  | None      | {}   |
+| 요청 URL      | Type | Parameter | 응답                                     |
+| ------------- | ---- | --------- | ---------------------------------------- |
+| /prosumer/all | GET  | None      | {status:true,payload:[{pID,name},...{}]} |
 
-  
+
 
 * RQ02
 
+  | 요청 URL            | Type | Parameter | 응답                                      |
+  | ------------------- | ---- | --------- | :---------------------------------------- |
+  | /prosumer/getdetail | GET  | pID       | {status:true, payload: {pID, name, memo}} |
+
+  
+
 * RQ03
+
+  | 요청 URL               | Type | Parameter       | 응답          |
+  | ---------------------- | ---- | --------------- | ------------- |
+  | /prosumer/modifydetail | POST | pID, name, memo | {status:true} |
+
+  
 
 * RQ04
 
+  | 요청 URL                | Type | Parameter | 응답 |
+  | ----------------------- | ---- | --------- | ---- |
+  | /prosumer/getdataildata | GET  | pID       | TBD  |
+
+  
+
 * RQ05
+
+  
 
 * RQ06
 
