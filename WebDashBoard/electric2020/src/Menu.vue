@@ -12,7 +12,7 @@ export default {
       menulist:['프로슈머 리스트','실시간 그래프','예측 그래프'],
       menubutton:'menubutton',
       routemenu:['/prosumer','/live','/predict']
-  
+      
     }
   },
   created(){
@@ -24,6 +24,10 @@ export default {
             console.log('1111');
             vm.$router.push({name:'detailProsumer', params: {data:inputdata}}).catch(()=>{});
         });
+    
+    EventBus.$on("live",function(){
+        vm.$router.push('/live').catch(()=>{});
+    });
   },
   methods: {
     clickmenu(index){
