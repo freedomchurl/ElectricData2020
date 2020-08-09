@@ -2,7 +2,8 @@
   <div id="main">   
       <div id="innermain">
       <img class="iconimg" v-bind:src="houseicon">
-      <h2>PROSUMER 01</h2>
+      <!-- <h2>PROSUMER 01</h2> -->
+      <h2>{{this.prosumerdata.name}}</h2>
       </div>
   </div>
 </template>
@@ -13,6 +14,7 @@ export default {
   methods: {
     
   },
+  props:['prosumerdata'],
   data(){
     return {
       timelist:['1시간','2시간','3시간','6시간','1일'],

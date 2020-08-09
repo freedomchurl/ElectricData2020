@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="header">
-      <img id="logo" v-bind:src="logo">
+      <img id="logo" v-bind:src="logo" v-on:click="gotomain">
       <h1 id="title">SMART ELECTRIC SYSTEM <span id="subtitle">2020 - Vaninside</span></h1>
     </div>
     <MenuComponent></MenuComponent>
@@ -20,7 +20,6 @@
 <script>
 import MenuVue from './Menu'
 //import MainVue from './Main.vue'
-
 export default {
   name: 'App',
   data(){
@@ -33,6 +32,11 @@ export default {
   components:{
     'MenuComponent':MenuVue,
     //'MainComponent':MainVue,
+  },
+  methods:{
+    gotomain(){
+      this.$router.push('/').catch(()=>{});
+    }
   }
 }
 </script>

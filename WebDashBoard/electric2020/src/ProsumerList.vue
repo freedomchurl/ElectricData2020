@@ -4,25 +4,35 @@
       <h2>프로슈머 리스트</h2>
       </div>
       <div id="flexbox">
-      <CardProsumer v-for="(menuname,index) in menulist" v-bind:key="index" id="cardprosumer"></CardProsumer>
+      <CardProsumer v-bind:prosumerdata="prosumerList[index]" v-on:click.native="detailevent(index)" v-for="(prosumer,index) in prosumerList" v-bind:key="index" id="cardprosumer"></CardProsumer>
       </div>
   </div>
 </template>
 
 <script>
 import cardProsumer from './ProsumerCard.vue'
+import {EventBus} from './event-bus.js'
+
 export default {
 components:{
     'CardProsumer':cardProsumer
 },
   methods: {
-    
+    detailevent(index){
+        console.log('Clicked ' + index);
+        console.log('/prosumer' + '/' + index);
+        var inputdata = this.prosumerList[index];
+        EventBus.$emit("prosumer-detail",index,inputdata); // index를 넘겨준다.
+    }
   },
   data(){
     return {
       timelist:['1시간','2시간','3시간','6시간','1일'],
       timebutton:'timeclass btn btn-light btn-sm',
-      menulist:['1','2','3','4','5','6']
+      menulist:['1','2','3','4','5','6'],
+      prosumerList:[
+          {index:0,name:'PROSUMER01'},{index:1,name:'PROSUMER02'},{index:2,name:'PROSUMER08'},{index:3,name:'PROSUMER09'}
+      ] // 이걸, axios로 가져와야 한다.
     }
   },
   mounted() {
@@ -32,7 +42,6 @@ components:{
 </script>
 
 <style scoped>
-  
 h2{
     color:rgb(224,224,224);
     font-weight: bold;

@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import {EventBus} from './event-bus.js'
 export default {
   data(){
     return {
@@ -13,6 +14,16 @@ export default {
       routemenu:['/prosumer','/live','/predict']
   
     }
+  },
+  created(){
+    var vm = this;
+    console.log('Clicked');
+    EventBus.$on("prosumer-detail",function(index,inputdata){
+            //console.log("Event!!" + name);
+            console.log(inputdata);
+            console.log('1111');
+            vm.$router.push({name:'detailProsumer', params: {data:inputdata}}).catch(()=>{});
+        });
   },
   methods: {
     clickmenu(index){

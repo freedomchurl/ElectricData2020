@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 
 import MainPage from '../Main.vue'
 import ProsumerList from '../ProsumerList.vue'
+import ProsumerCardDetail from '../ProsumerCardDetail.vue'
 Vue.use(VueRouter)
 
 
@@ -21,7 +22,19 @@ const route = [
     },
     {
       path:'/prosumer',
-      component:ProsumerList
+      component:ProsumerList,
+      // children:[
+      //   {
+      //     path:'/:id',
+      //     component:ProsumerCardDetail
+      //   }
+      // ]
+    },
+    {
+      path:'/prosumerdetail',
+      component:ProsumerCardDetail,
+      name:'detailProsumer',
+      props:true
     }
     // {
     //   path:'/loginProject',
