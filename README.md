@@ -8,10 +8,11 @@
 
 # MySQL DB 설계
 
-# 테이블 Scheme
+### 테이블 Scheme
+#### prosumer_info ( 프로슈머의 기본적인 정보가 들어있음 )
 
-|제목|내용|설명|
+|컬럼명|내용|설명|
 |------|---|---|
-|테스트1|테스트2|테스트3|
+|id|prosumer id|autoincrement, primary key|
 |테스트1|테스트2|테스트3|
 |테스트1|테스트2|테스트3|
