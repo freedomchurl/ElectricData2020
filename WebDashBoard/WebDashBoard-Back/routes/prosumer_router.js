@@ -25,7 +25,7 @@ router.get('/getdetail',getDetail);
 // getDetail
 
 router.post('/modifydetail',modifyDetail);
-
+// ------------
 router.get('/getdetaildata',getDetailData);
 //------ 여기까지 완료 
 
