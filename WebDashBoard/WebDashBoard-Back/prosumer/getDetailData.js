@@ -1,6 +1,6 @@
 var pool = require('../setting/mysql_create'); // Caching이 된다.
 
-//선택한 프로슈머 정보 가져오기 ( pID, 이름, 메모 ) - detail 페이지용
+//선택된 프로슈머 최근 1달 데이터 가져와서 가공해서 주기
 //GET, key -> pID
 var getDetail = function (req, res) {
     let pID = req.query.pID;

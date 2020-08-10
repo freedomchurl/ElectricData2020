@@ -26,6 +26,7 @@ router.get('/getdetail',getDetail);
 
 router.post('/modifydetail',modifyDetail);
 
+
 router.get('/getdetaildata',getDetailData);
 
 router.get('/getmainlive',getMainLive);
