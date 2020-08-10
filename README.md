@@ -19,6 +19,10 @@
 |name|prosumer name|varchar(100)|
 |memo|prosumer memo|varchar(4000)|
 
+create table prosumer_info(pID int auto_increment, name varchar(100), memo varchar(4000), primary key(pID));
+
+
+
 #### 2. userdata ( 유저로부터 받은 데이터 )
 
 | 컬럼명  | 내용        | 설명                     |
