@@ -26,8 +26,8 @@ router.get('/getdetail',getDetail);
 
 router.post('/modifydetail',modifyDetail);
 
-
 router.get('/getdetaildata',getDetailData);
+//------ 여기까지 완료 
 
 router.get('/getmainlive',getMainLive);
 

@@ -14,7 +14,9 @@ var getDetail = function (req, res) {
             throw err;
         }
         // GET, 파라미터 pID.
-        var exec = conn.query('select * from prosumer_info where pID=?',pID, function (err, result) {
+        // select * from userdata where timestampdiff(month,time,NOW()) <= 0 order by time;  -> 오름차순 
+        // control data도 가져와야한다.
+        var exec = conn.query('select * from userdata where pID=? and timestampdiff(month,time,NOW()) <= 0 order by time',pID, function (err, result) {
             conn.release();
 
             res.header("Access-Control-Allow-Headers", "Authorization");
