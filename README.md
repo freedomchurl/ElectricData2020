@@ -5,5 +5,10 @@
 전반적인 전체 데이터 흐름도는 아래와 같다
 
 ![데이터 흐름도](https://github.com/freedomchurl/ElectricData2020/blob/master/Image/Electric_Dataflow.png)
+
+---
+
+
+
 ![데이터 흐름도2](https://github.com/freedomchurl/ElectricData2020/blob/master/Image/electric2020.png)
 
