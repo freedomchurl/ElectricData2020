@@ -2,7 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import MainPage from '../Main.vue'
-
+import ProsumerList from '../ProsumerList.vue'
+import ProsumerCardDetail from '../ProsumerCardDetail.vue'
 Vue.use(VueRouter)
 
 
@@ -19,6 +20,22 @@ const route = [
       path:'/',
       component: MainPage
     },
+    {
+      path:'/prosumer',
+      component:ProsumerList,
+      // children:[
+      //   {
+      //     path:'/:id',
+      //     component:ProsumerCardDetail
+      //   }
+      // ]
+    },
+    {
+      path:'/prosumerdetail',
+      component:ProsumerCardDetail,
+      name:'detailProsumer',
+      props:true
+    }
     // {
     //   path:'/loginProject',
     //   component:LoginPage,

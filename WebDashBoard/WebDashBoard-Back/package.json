@@ -1,0 +1,24 @@
+{
+  "name": "webdashboard-back",
+  "version": "1.0.0",
+  "description": "webdashboard-back",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/freedomchurl/ElectricData2020.git"
+  },
+  "author": "lee cheol",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/freedomchurl/ElectricData2020/issues"
+  },
+  "homepage": "https://github.com/freedomchurl/ElectricData2020#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "forever": "^3.0.0"
+  }
+}
