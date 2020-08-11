@@ -6,18 +6,15 @@
       <div class="canvasframe">
           <h2>실시간 전력 생산량</h2>
        
-          <canvas id="mainCanvas" width="800">
-
+          <canvas id="mainCanvas">
           </canvas>
       </div>
       <div class="canvasframe">
           <h2>실시간 전력 수요량</h2>
-         
           <canvas id="mainCanvas2"></canvas>
       </div>
       <div class="canvasframe">
           <h2>실시간 전력 저장량</h2>
-      
           <canvas id="mainCanvas3"></canvas>
       </div>
   </div>
@@ -106,8 +103,10 @@ export default {
     width: 5rem;
     margin: 3px;
   }
-  #mainCanvas{
+  canvas{
     height: 80%;
+    margin: 1rem 1rem 1rem 1rem;
+    background-color: rgb(224,224,224);
   }
   .canvasframe{
     margin:2rem 2rem 1rem 2rem;

@@ -4,11 +4,13 @@
       <div id="leftbox">
         <div id="listtitle">
           <img class="iconimg" v-bind:src="houseicon" />
-          <h2>{{this.$route.params.data.name}}</h2>
+          <input v-if="editmode" type="text" v-model="nameinput" v-bind:placeholder="namecontent">
+          <h2 v-else>{{namecontent}}</h2>
           <!-- {{this.$route.params.data.index + ' ' + this.$route.params.data.name}} -->
         </div>
       </div>
-      <button id="modify" v-bind:class="modifybutton">정보 수정</button>
+      <button v-if="editmode" id="modify" v-bind:class="modifybutton" v-on:click="finishmodify">수정 완료</button>
+      <button v-else id="modify" v-bind:class="modifybutton" v-on:click="gotomodify">정보 수정</button>
     </div>
     <!-- <div id="flexbox">
       <CardProsumer v-on:click.native="detailevent(index)" v-for="(menuname,index) in menulist" v-bind:key="index" id="cardprosumer"></CardProsumer>
@@ -67,7 +69,8 @@
     <!-- -->
     <div id="memo-card">
       <h2 class="memo-text">메모</h2>
-      <div id="memo-content">{{memocontent}}</div>
+      <textarea v-if="editmode" v-model="memoinput" id="memo-content" cols="30" rows="10" v-bind:placeholder="memocontent"></textarea>
+      <div v-else id="memo-content">{{memocontent}}</div>
     </div>
   </div>
 </template>
@@ -167,6 +170,22 @@ export default {
         options: chartData.options,
       });
     },
+    gotomodify(){
+      this.editmode = true;
+    },
+    finishmodify(){
+      this.editmode = false;
+      // axios
+      var vm = this;
+      this.memocontent = this.memoinput;
+      this.namecontent = this.nameinput;
+      axios.post("http://127.0.0.1:7272/prosumer/modifydetail", {
+              pID: vm.$route.params.data.pID, name: vm.nameinput, memo:vm.memoinput,
+            })
+            .then((res) => {
+              console.log(res);
+            });
+    }
   },
   data() {
     return {
@@ -184,9 +203,15 @@ export default {
         ex: "",
         sales: "",
       },
+      editmode:false,
+      namecontent:'',
+      nameinput:'',
+      memoinput:'',
     };
   },
   mounted() {
+    this.namecontent = this.$route.params.data.name;
+    this.nameinput = this.namecontent;
     const vm = this;
     console.log("Why!");
     // console.log(vm.$route.params.data.name + '!!!');
@@ -200,6 +225,7 @@ export default {
         if (res.data.status == true) {
           //vm.prosumerList = res.data.payload;
           vm.memocontent = res.data.payload[0].memo;
+          vm.memoinput = vm.memocontent;
 
           // 여기에는, 세부 데이터들 가져오기
           console.log('why');
@@ -298,6 +324,7 @@ export default {
   box-shadow: 2px 2px 2px 2px #232323;
 }
 #memo-content {
+  width: 80%;
   height: 200px;
   margin: 2rem 2rem 1rem 2rem;
   font-size: 1.5rem;
