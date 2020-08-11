@@ -6,7 +6,7 @@ var getDetail = function (req, res) {
     let pID = req.body.pID; 
     let name = req.body.name;
     let memo = req.body.memo;
-
+    console.log(req);
     pool.getConnection(function (err, conn) {
         if (err) {
             if (conn) {

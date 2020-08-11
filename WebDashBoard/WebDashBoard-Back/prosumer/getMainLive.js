@@ -1,4 +1,6 @@
 var pool = require('../setting/mysql_create'); // Caching이 된다.
+var client = require('../setting/redis');
+// redis - client 
 
 //선택한 프로슈머 정보 가져오기 ( pID, 이름, 메모 ) - detail 페이지용
 //GET, key -> pID
