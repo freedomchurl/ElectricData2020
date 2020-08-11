@@ -1,0 +1,13 @@
+{
+    "mysql":{
+        "connectionLimit":20,
+        "host":"49.50.175.17",
+        "user":"root",
+        "password":"password",
+        "database":"electric_data",
+        "debug":false,
+        "charset":"utf8"
+    }
+
+
+}
