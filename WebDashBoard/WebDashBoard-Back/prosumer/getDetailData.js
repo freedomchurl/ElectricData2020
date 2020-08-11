@@ -16,7 +16,9 @@ var getDetail = function (req, res) {
         // GET, 파라미터 pID.
         // select * from userdata where timestampdiff(month,time,NOW()) <= 0 order by time;  -> 오름차순 
         // control data도 가져와야한다.
-        var exec = conn.query('select * from userdata where pID=? and timestampdiff(month,time,NOW()) <= 0 order by time',pID, function (err, result) {
+        // MySQL에서 가져와야한다.
+        var exec = conn.query('select output,demand,storage from userdata ' + 
+        'where pID=? and timestampdiff(month,time,NOW()) <= 0 order by time',pID, function (err, result) {
             conn.release();
 
             res.header("Access-Control-Allow-Headers", "Authorization");
@@ -25,7 +27,22 @@ var getDetail = function (req, res) {
                 res.send({ status: false ,payload:null });
             }
             else {
-                res.send({ status: true, payload:result });
+                // 여기서 데이터를 가공해야 한다.
+                let avg_output = 0;
+                let avg_demand = 0;
+                let avg_storage = 0;
+                for(let i=0;i<result.length;i++){
+                    avg_output += result[i].output;
+                    avg_demand += result[i].demand;
+                    avg_storage += result[i].storage;
+                }
+                if(result.length!=0){
+                    avg_output = avg_output / result.length;
+                    avg_demand = avg_demand / result.length;
+                    avg_storage = avg_storage / result.length;
+                }
+                let payload = {avg_output :avg_output, avg_demand:avg_demand,avg_storage:avg_storage,data:result}
+                res.send({ status: true, payload:payload });
             }
         });
 
