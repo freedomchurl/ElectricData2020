@@ -159,7 +159,9 @@ public class DataDao implements IDataDao{
 				values.rightPop("prosumer:"+(String) obj.get("pID")+":purchase_town");
 				values.rightPop("prosumer:"+(String) obj.get("pID")+":purchase_ex");
 				values.rightPop("prosumer:"+(String) obj.get("pID")+":control_storage");
-				System.out.println(values.range("testOutput", 0, -1));
+				//System.out.println(values.range("testOutput", 0, -1));
+				
+				System.out.println("test");
 			}
 	        
 			return true;
