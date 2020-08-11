@@ -6,9 +6,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,11 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -35,15 +40,15 @@ public class DataDao implements IDataDao{
 	// MySQL Info
 	private String driver = "com.mysql.cj.jdbc.Driver";
 	private String url = "jdbc:mysql://localhost:3306/electric_data?serverTimezone=UTC&characterEncoding=UTF-8";
-		
+	//private String url = "jdbc:mysql://49.50.175.17:3306/electric_data?serverTimezone=UTC&characterEncoding=UTF-8";
+	
 	private String userid = "root";
-	private String userpw = "1234";
+	private String userpw = "password";
+	
+	private static int MAX_SIZE = 50; // 데이터 만료 시간
 		
 	 @Autowired
 	 RedisTemplate<String, Object> redisTemplate;
-	 
-	@Resource(name="redisTemplate")
-	SetOperations<String, Double> setOperations; 
 
 	private Connection conn = null;
 	private PreparedStatement pstmt_1 = null;
@@ -84,6 +89,23 @@ public class DataDao implements IDataDao{
 			pstmt_1.executeUpdate();
 			
 			pstmt_1.close();
+			
+			ListOperations<String, Object> values = redisTemplate.opsForList();
+			
+			values.leftPush("prosumer:"+(String) obj.get("pID")+":output", (Double) obj.get("output"));
+			values.leftPush("prosumer:"+(String) obj.get("pID")+":demand", (Double) obj.get("demand"));
+			values.leftPush("prosumer:"+(String) obj.get("pID")+":user_storage", (Double) obj.get("storage"));
+			
+			System.out.println(values.range("testOutput", 0, -1));
+			
+			// 6시간 이후 만료.
+			if(values.size((String) obj.get("pID") +  ":output") >= MAX_SIZE ) {
+				values.rightPop("prosumer:"+(String) obj.get("pID")+":output");
+				values.rightPop("prosumer:"+(String) obj.get("pID")+":demand");
+				values.rightPop("prosumer:"+(String) obj.get("pID")+":user_storage");
+				System.out.println(values.range("testOutput", 0, -1));
+			}
+			
 			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -117,22 +139,28 @@ public class DataDao implements IDataDao{
 			pstmt_2.close();
 			
 			// Redis
-/*
-			setOperations.add("PROSUMER01:output", 5000.0);
-			setOperations.add("PROSUMER01:output", 7000.0);
-			setOperations.add("PROSUMER01:output", 6000.0);
+
+			SimpleDateFormat format1 = new SimpleDateFormat ( "yyyyMMddmmss");
+			Date curtime = new Date();
+			String time1 = format1.format(curtime);
 			
-			Set<Double> result = setOperations.members("PROSUMER01:output");
-	*/		
-		//	System.out.println(result.toString());
+			ListOperations<String, Object> values = redisTemplate.opsForList();
 			
-			ValueOperations<String, Object> values = redisTemplate.opsForValue();
+			values.leftPush("prosumer:"+(String) obj.get("pID")+":sales", (Double) obj.get("sales"));
+			values.leftPush("prosumer:"+(String) obj.get("pID")+":purchase_town", (Double) obj.get("purchase_town"));
+			values.leftPush("prosumer:"+(String) obj.get("pID")+":purchase_ex", (Double) obj.get("purchase_ex"));
+			values.leftPush("prosumer:"+(String) obj.get("pID")+":control_storage", (Double) obj.get("storage"));
 			
-			values.set("name", "jimin");
-	        values.set("framework", "spring");
-	        values.set("message", "hello world");
-	       
-			redisTemplate.expire("name", 60, TimeUnit.SECONDS);
+			//System.out.println(values.range("testOutput", 0, -1));
+			
+			// 6시간 이후 만료.
+			if(values.size((String) obj.get("pID") +  ":output") >= MAX_SIZE ) {
+				values.rightPop("prosumer:"+(String) obj.get("pID")+":sales");
+				values.rightPop("prosumer:"+(String) obj.get("pID")+":purchase_town");
+				values.rightPop("prosumer:"+(String) obj.get("pID")+":purchase_ex");
+				values.rightPop("prosumer:"+(String) obj.get("pID")+":control_storage");
+				System.out.println(values.range("testOutput", 0, -1));
+			}
 	        
 			return true;
 		} catch (SQLException e) {

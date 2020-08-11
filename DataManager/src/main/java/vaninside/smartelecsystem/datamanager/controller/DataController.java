@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -32,15 +33,15 @@ public class DataController {
 	@Autowired
 	DataService service;
 	
-	public static String topic = "topic";
+	public static String topic = "topic1";
+	
 	private static final String MQTT_PUBLISHER_ID = "electric-data-server";
     private static final String MQTT_SERVER_ADDRES= "tcp://127.0.0.1:1883";
     public static IMqttClient instance;
    
 
 	public DataController() throws MqttException{
-		init();
-		
+		init();	
 	}
 	
 	public void init() throws MqttException{
@@ -62,7 +63,7 @@ public class DataController {
 
 				@Override
 				public void messageArrived(String topic, MqttMessage message) throws Exception {
-					saveUserData(message.toString());
+					control(message.toString());
 				}
 
 				@Override
@@ -72,21 +73,17 @@ public class DataController {
         // Subscribe to topic
         instance.subscribe(topic);
 	}
+
 	
-	// Prosumer's data
-	public boolean saveUserData(String msg) {
-		return service.saveUserData(msg);
-	}
-	
-	// Deep Learning Output
-	@RequestMapping(value="/control", method=RequestMethod.POST)
+	// User Input < - > Control Output
+	@RequestMapping(value="/control", method=RequestMethod.GET)
 	public HashMap<String, Object> control(@RequestBody String msg) throws IOException, ClassNotFoundException, SQLException {
-		boolean result = service.sendControlData(msg);
+		
+		boolean result = service.control(msg);
 
 		// return json
 		HashMap<String, Object> hashMap = new HashMap<String, Object>();
         hashMap.put("status", result?1:0);
         return hashMap;
 	}
-
 }
