@@ -33,7 +33,7 @@ public class DataController {
 	@Autowired
 	DataService service;
 	
-	public static String topic = "topic1";
+	public static String topic = "topic";
 	
 	private static final String MQTT_PUBLISHER_ID = "electric-data-server";
     private static final String MQTT_SERVER_ADDRES= "tcp://127.0.0.1:1883";
@@ -63,6 +63,7 @@ public class DataController {
 
 				@Override
 				public void messageArrived(String topic, MqttMessage message) throws Exception {
+					System.out.println(message.toString());
 					control(message.toString());
 				}
 

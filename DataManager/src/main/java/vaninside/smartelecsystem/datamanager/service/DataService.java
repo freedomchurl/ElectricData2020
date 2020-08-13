@@ -35,15 +35,16 @@ import vaninside.smartelecsystem.datamanager.controller.DataController;
 import vaninside.smartelecsystem.datamanager.dao.DataDao;
 
 @Service
-public class DataService implements IDataService{
+public class DataService{
 
 	public static String topic = "topic2";
 	
 	@Autowired
 	DataDao dao;
 	
-	@Override
+	
 	public boolean sendControlData(String msg) {
+		System.out.println(msg);
 		MqttMessage mqttMessage = new MqttMessage();
 		mqttMessage.setPayload(msg.getBytes());
 		try {
@@ -61,7 +62,7 @@ public class DataService implements IDataService{
 	
 	public String predict(String msg) throws JsonProcessingException{
 
-		System.out.println(msg);
+		//System.out.println(msg);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		RestTemplate restTemplate = new RestTemplate();
@@ -71,13 +72,13 @@ public class DataService implements IDataService{
 		HttpEntity<String> entity = new HttpEntity<>(msg,headers);
 		String answer = restTemplate.postForObject(url, entity, String.class);
 		
-		System.out.println(answer);
+		//System.out.println(answer);
 		
 		return answer;
 
 	}
 
-	@Override
+	
 	public boolean control(String msg) {
 		String controlData;
 		// userData 저장
