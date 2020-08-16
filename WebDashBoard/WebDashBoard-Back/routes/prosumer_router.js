@@ -14,9 +14,14 @@ let getDetailData = require('../prosumer/getDetailData');
 let getMainLive = require('../prosumer/getMainLive');
 let getDetailLive = require('../prosumer/getDetailLive');
 let predictAll = require('../prosumer/predictAll');
-
+let getNum = require('../prosumer/getNum');
+let getSide = require('../prosumer/getSide');
 
 router.use(express.json());
+
+router.get('/getmainside',getSide);
+
+router.get('/getnum',getNum);
 
 router.get('/all',getAll);
 // getAll function.

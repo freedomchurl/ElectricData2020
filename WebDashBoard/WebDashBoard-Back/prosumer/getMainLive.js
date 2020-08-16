@@ -1,7 +1,7 @@
 var pool = require('../setting/mysql_create'); // Caching이 된다.
 var client = require('../setting/redis');
 // redis - client 
-USERNUM = 100; // 100명이라고 가정한다.
+USERNUM = 3; // 100명이라고 가정한다.
 //선택한 프로슈머 정보 가져오기 ( pID, 이름, 메모 ) - detail 페이지용
 //GET, key -> pID
 var getDetail = function (req, res) {
@@ -18,16 +18,19 @@ var getDetail = function (req, res) {
             endindex = 23;
         else if (period == '3h')
             endindex = 35;
-        else if (preiod == '6h')
+        else if (period == '6h')
             endindex = -1;
         // 시간에 따른 endindex,
 
+
+
+
         const multi = client.multi(); // multi-exec를 위한 메소드
-        for (var i = 0; i < USERNUM; i++) {
+        for (var i = 1; i <= USERNUM; i++) {
             let key = 'prosumer:'
-            multi.lrange(key + i + 'output', 0, -1);
-            multi.lrange(key + i + 'demand', 0, -1);
-            multi.lrange(key + i + 'user_storage', 0, -1);
+            multi.lrange(key + i + ':output', 0, endindex);
+            multi.lrange(key + i + ':demand', 0, endindex);
+            multi.lrange(key + i + ':user_storage', 0, endindex);
         }
 
         multi.exec(function (err, result) {
@@ -39,21 +42,23 @@ var getDetail = function (req, res) {
                 let avg_output = []
                 let avg_demand = [];
                 let avg_user_storage = [];
-
+                
+                //console.log(result);
+                //console.log(result[0].length);
                 for (var i = 0; i < result[0].length; i++) {
                     let sum_output = 0;
-                    let sum_demand =0;
+                    let sum_demand = 0;
                     let sum_user_storage = 0;
                     for (var j = 0; j < USERNUM; j++) {
-                        sum_output += parseFloat(result[j*3][i]);
-                        sum_demand += parseFloat(result[j*3+1][i]);
-                        sum_user_storage += parseFloat(result[j*3+2][i]);
+                        sum_output += parseFloat(result[j * 3][i]);
+                        sum_demand += parseFloat(result[j * 3 + 1][i]);
+                        sum_user_storage += parseFloat(result[j * 3 + 2][i]);
                     }
-                    avg_output[i] = sum_output / result[0].length;
-                    avg_demand[i] = sum_demand / result[0].length;
-                    avg_user_storage[i] = sum_user_storage / result[0].length;
+                    avg_output[i] = sum_output / USERNUM;
+                    avg_demand[i] = sum_demand / USERNUM;
+                    avg_user_storage[i] = sum_user_storage / USERNUM;
                 }
-                
+
                 /*------
                 // 여기서 Respone을 보내야 한다. // 추후 형식에 대한 고민 필요 // 
                 status:true,
@@ -61,7 +66,10 @@ var getDetail = function (req, res) {
                 demand:avg_demand,
                 storage:avg_user_storage
                 -------*/
-                let resData = {status:true,output:avg_output,demand:avg_demand,storage:avg_user_storage};
+
+                let resData = { status: true, output: avg_output.reverse(), demand: avg_demand.reverse(), storage: avg_user_storage.reverse() };
+                //console.log(resData);
+                res.send(resData);
             }
         })
 
@@ -75,7 +83,8 @@ var getDetail = function (req, res) {
                 throw err;
             }
             // GET, 파라미터 pID.
-            var exec = conn.query('select * from userdata where timestampdiff(hour,time,NOW()) <= ? order by time', pID, function (err, result) {
+            var exec = conn.query('select avg(output) avg_output, avg(demand) avg_demand, avg(storage) avg_storage from userdata group by UNIX_TIMESTAMP(time) DIV 60 order by UNIX_TIMESTAMP(time) DIV 60 desc limit 288',function(err,result){
+            //var exec = conn.query('select * from userdata where timestampdiff(day,time,NOW()) <= 1 order by time', function (err, result) {
                 conn.release();
 
                 res.header("Access-Control-Allow-Headers", "Authorization");
@@ -84,7 +93,21 @@ var getDetail = function (req, res) {
                     res.send({ status: false, payload: null });
                 }
                 else {
-                    res.send({ status: true, payload: result });
+
+                    let avg_output = []
+                    let avg_demand = [];
+                    let avg_user_storage = [];
+                    
+                    for(var i =0; i<result.length;i++)
+                    {
+                        avg_output.push(result[i].avg_output);
+                        avg_demand.push(result[i].avg_demand);
+                        avg_user_storage.push(result[i].avg_storage);
+                    }
+
+                    let resData = { status: true, output: avg_output.reverse(), demand: avg_demand.reverse(), storage: avg_user_storage.reverse() };
+                    res.send(resData);
+                    //res.send({ status: true, payload: result });
                 }
             });
 

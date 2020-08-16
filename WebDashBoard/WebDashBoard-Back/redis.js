@@ -1,5 +1,5 @@
 const redis = require('redis');
-const client = redis.createClient(6379, '49.50.175.17');
+const client = redis.createClient(6379, '192.168.0.29');
 
 //client.rpush('fruits1', 'apple', 'orange', 'apple');
 //client.lpush('fruits1', 'banana', 'pear');
