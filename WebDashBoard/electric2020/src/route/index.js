@@ -4,6 +4,8 @@ import VueRouter from 'vue-router'
 import MainPage from '../Main.vue'
 import ProsumerList from '../ProsumerList.vue'
 import ProsumerCardDetail from '../ProsumerCardDetail.vue'
+import LivePage from '../LivePage.vue'
+
 Vue.use(VueRouter)
 
 
@@ -18,7 +20,11 @@ const route = [
     // },
     {
       path:'/',
-      component: MainPage
+      component: MainPage,
+    },
+    {
+      path:'/live',
+      component:LivePage,
     },
     {
       path:'/prosumer',
