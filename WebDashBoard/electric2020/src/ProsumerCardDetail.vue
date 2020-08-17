@@ -79,6 +79,8 @@
 import Chart from "chart.js";
 import axios from "axios";
 
+import IP from '../static/setting.json'
+
 let chartd_left = {
   type: "line",
   data: {
@@ -89,18 +91,18 @@ let chartd_left = {
         // data: [3, 4, 5, 4, 2],//, 1, 2, 3, 2, 1, 2, 3, 4, 2, 3],
         backgroudColor: 
           "rgba(54,73,93,.5)",
-        borderColor: "#36495d", 
-        borderWidth: 3,
+        borderColor: "#ff0000", 
+        borderWidth: 0.5,
       },{
         label:"수요량",
         backgroudColor: "rgba(24,23,23,.5)",
-        borderColor: "#36495d", 
-        borderWidth: 3,},
+        borderColor: "#00ff00", 
+        borderWidth: 0.5,},
         {
           label:"저장량",backgroudColor: 
           "rgba(110,73,110,.5)",
-          borderColor: "#36495d", 
-          borderWidth: 3,}
+          borderColor: "#0000ff", 
+          borderWidth: 0.5,}
     ],
   },
   options: {
@@ -127,20 +129,20 @@ let chartd_right = {
         label: "타운 내 구매량",
         backgroudColor: 
           "rgba(54,73,93,.5)",
-        borderColor: "#36495d",
-        borderWidth: 3,
+        borderColor: "#ff0000",
+        borderWidth: 0.5,
       },{
         label: "전력거래소 구매량",
         backgroudColor: 
           "rgba(54,73,93,.5)",
-        borderColor: "#36495d",
-        borderWidth: 3,
+        borderColor: "#00ff00",
+        borderWidth: 0.5,
       },{
         label: "전력 판매량",
         backgroudColor: 
           "rgba(54,73,93,.5)",
-        borderColor: "#36495d",
-        borderWidth: 3,
+        borderColor: "#0000ff",
+        borderWidth: 0.5,
       },
     ],
   },
@@ -179,7 +181,7 @@ export default {
       var vm = this;
       this.memocontent = this.memoinput;
       this.namecontent = this.nameinput;
-      axios.post("http://127.0.0.1:7272/prosumer/modifydetail", {
+      axios.post("http://" + IP.IP + ":7272/prosumer/modifydetail", {
               pID: vm.$route.params.data.pID, name: vm.nameinput, memo:vm.memoinput,
             })
             .then((res) => {
@@ -216,7 +218,7 @@ export default {
     console.log("Why!");
     // console.log(vm.$route.params.data.name + '!!!');
     axios
-      .get("http://127.0.0.1:7272/prosumer/getdetail", {
+      .get("http://" + IP.IP + ":7272/prosumer/getdetail", {
         params: { pID: vm.$route.params.data.pID },
       })
       .then((res) => {
@@ -230,7 +232,7 @@ export default {
           // 여기에는, 세부 데이터들 가져오기
           console.log('why');
           axios
-            .get("http://127.0.0.1:7272/prosumer/getdetaildata", {
+            .get("http://" + IP.IP + ":7272/prosumer/getdetaildata", {
               params: { pID: vm.$route.params.data.pID },
             })
             .then((res) => {
@@ -244,7 +246,8 @@ export default {
                 let output = res.data.payload.output;
                 vm.pavg.ex = output.avg_ex.toFixed(3);
                 vm.pavg.town = output.avg_town.toFixed(3);
-                vm.pavg.sales = output.avg_sales.toFixed(3);
+                vm.pavg.sales = (parseFloat(output.avg_sales_ex.toFixed(3)) + parseFloat(output.avg_sales_town.toFixed(3))).toFixed(3);
+                //vm.pavg.sales_town = output.avg_sales_town.toFixed(3);
                 console.log("Finish");
 
                 let inputdata = res.data.payload.input.data;
@@ -270,7 +273,7 @@ export default {
                 let o_townArr = [];
                 for(let i=0;i<outputdata.length;i++)
                 {
-                  o_salesArr.push(outputdata[i].sales)
+                  o_salesArr.push((parseFloat(outputdata[i].sales_ex) + parseFloat(outputdata[i].sales_town)))
                   o_exArr.push(outputdata[i].purchase_ex);
                   o_townArr.push(outputdata[i].purchase_town);
                 }

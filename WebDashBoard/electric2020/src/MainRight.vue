@@ -53,7 +53,7 @@
 <script>
 import axios from "axios";
 import { EventBus } from "./event-bus.js";
-
+import IP from '../static/setting.json'
 export default {
   data() {
     return {
@@ -74,7 +74,7 @@ export default {
       //console.log('why!');
       var vm = this;
       axios
-        .get("http://127.0.0.1:7272/prosumer/getmainside", {
+        .get("http://" + IP.IP + ":7272/prosumer/getmainside", {
           params: { usernum: vm.prosumernum },
         })
         .then((res) => {
@@ -93,14 +93,14 @@ export default {
       console.log("Why not stop");
       clearInterval(vm.controller);
     });
-    axios.get("http://127.0.0.1:7272/prosumer/getnum").then((res) => {
+    axios.get("http://" + IP.IP + ":7272/prosumer/getnum").then((res) => {
       console.log(res.data);
       if (res.data.status == true) {
         //vm.prosumernum_data = res.data.payload;
         vm.prosumernum = res.data.payload.prosumernum;
 
         axios
-          .get("http://127.0.0.1:7272/prosumer/getmainside", {
+          .get("http://" + IP.IP + ":7272/prosumer/getmainside", {
             params: { usernum: vm.prosumernum },
           })
           .then((res) => {

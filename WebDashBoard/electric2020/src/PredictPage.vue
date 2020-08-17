@@ -3,7 +3,7 @@
     <div id="leftmain">
       <div id="timezone">
         <span id="combobox-name">PROSUMER 선택</span>
-        <select class="combo" v-model="selected">
+        <select v-on:change="getPredict" class="combo" v-model="selected">
           <option
             v-for="(prosumer,index) in prosumerList"
             v-bind:value="prosumer.pID"
@@ -31,13 +31,16 @@
 <script>
 import Chart from "chart.js";
 import axios from "axios";
+
+import IP from '../static/setting.json'
+
 let chartd_top = {
   type: "line",
   data: {
     labels: [1, 2, 3],
     datasets: [
       {
-        label: "생산량",
+        label: "가격 예측",
         // data: [3, 4, 5, 4, 2],//, 1, 2, 3, 2, 1, 2, 3, 4, 2, 3],
         backgroudColor: "rgba(54,73,93,.5)",
         borderColor: "#36495d",
@@ -67,7 +70,7 @@ let chartd_middle = {
     labels: [1, 2, 3],
     datasets: [
       {
-        label: "수요량",
+        label: "생산량",
         backgroudColor: "rgba(24,23,23,.5)",
         borderColor: "#36495d",
         borderWidth: 3,
@@ -91,12 +94,12 @@ let chartd_middle = {
 };
 
 let chartd_bottom = {
-  type: "line",
+  type: "line", 
   data: {
     labels: [1, 2, 3],
     datasets: [
       {
-        label: "저장량",
+        label: "수요량",
         backgroudColor: "rgba(110,73,110,.5)",
         borderColor: "#36495d",
         borderWidth: 3,
@@ -130,42 +133,43 @@ export default {
         options: chartData.options,
       });
     },
-    getPredict(index) {
-      let insertKey = this.timekey[index];
+    getPredict() {
+      console.log('실행되어라');
+      console.log(this.selected);
       axios
-        .get("http://127.0.0.1:7272/prosumer/predictall", {
-          params: { pID: insertKey },
+        .get("http://" + IP.IP + ":7272/prosumer/predictall", {
+          params: { pID: this.selected },
         })
         .then((res) => {
           console.log(res.data);
           if (res.data.status == true) {
-            let payload = res.data;
+              let payload_data = res.data.payload;
+              console.log(payload_data.retail);
+              chartd_top.data.labels = Array.from(
+                new Array(payload_data.retail.length),
+                (x, i) => i + 1
+              ); //[...Array(inputdata.length).keys()];
 
-            chartd_top.data.labels = Array.from(
-              new Array(payload.output.length),
-              (x, i) => i + 1
-            ); //[...Array(inputdata.length).keys()];
+              chartd_top.data.datasets[0].data = payload_data.retail;
 
-            chartd_top.data.datasets[0].data = payload.output;
+              chartd_middle.data.labels = Array.from(
+                new Array(payload_data.output.length),
+                (x, i) => i + 1
+              ); //[...Array(inputdata.length).keys()];
 
-            chartd_middle.data.labels = Array.from(
-              new Array(payload.demand.length),
-              (x, i) => i + 1
-            ); //[...Array(inputdata.length).keys()];
+              chartd_middle.data.datasets[0].data = payload_data.output;
 
-            chartd_middle.data.datasets[0].data = payload.demand;
+              chartd_bottom.data.labels = Array.from(
+                new Array(payload_data.demand.length),
+                (x, i) => i + 1
+              ); //[...Array(inputdata.length).keys()];
 
-            chartd_bottom.data.labels = Array.from(
-              new Array(payload.storage.length),
-              (x, i) => i + 1
-            ); //[...Array(inputdata.length).keys()];
+              chartd_bottom.data.datasets[0].data = payload_data.demand;
 
-            chartd_bottom.data.datasets[0].data = payload.storage;
-
-            this.createChart("mainCanvas", chartd_top);
-            this.createChart("mainCanvas2", chartd_middle);
-            this.createChart("mainCanvas3", chartd_bottom);
-          }
+              this.createChart("mainCanvas", chartd_top);
+              this.createChart("mainCanvas2", chartd_middle);
+              this.createChart("mainCanvas3", chartd_bottom);
+            }
         });
     },
   },
@@ -192,43 +196,46 @@ export default {
       여기서, 프로슈머 리스트를 받아와야 함. 그래서 PID, PName을 갖고 있어야 한다.
     */
     axios
-      .get("http://127.0.0.1:7272/prosumer/all")
+      .get("http://" + IP.IP + ":7272/prosumer/all")
       .then((res) => {
         if (res.data.status == true) {
           vm.prosumerList = res.data.payload;
-          vm.selected = res.data.payload[0]; // 첫번째 Element를 선택하도록 한다.
+          vm.selected = res.data.payload[0].pID; // 첫번째 Element를 선택하도록 한다.
+          console.log(vm.selected);
+          // 모든 유저를 가져와야 함
         }
       })
       .then(() => {
         axios
-          .get("http://127.0.0.1:7272/prosumer/getmainlive", {
-            params: { time: "1d" },
+          .get("http://" + IP.IP + ":7272/prosumer/predictall", {
+            params: { pID: vm.selected },
           })
           .then((res) => {
+            console.log("과연");
             console.log(res.data);
             if (res.data.status == true) {
-              let payload = res.data;
-
+              let payload_data = res.data.payload;
+              console.log(payload_data.retail);
               chartd_top.data.labels = Array.from(
-                new Array(payload.output.length),
+                new Array(payload_data.retail.length),
                 (x, i) => i + 1
               ); //[...Array(inputdata.length).keys()];
 
-              chartd_top.data.datasets[0].data = payload.output;
+              chartd_top.data.datasets[0].data = payload_data.retail;
 
               chartd_middle.data.labels = Array.from(
-                new Array(payload.demand.length),
+                new Array(payload_data.output.length),
                 (x, i) => i + 1
               ); //[...Array(inputdata.length).keys()];
 
-              chartd_middle.data.datasets[0].data = payload.demand;
+              chartd_middle.data.datasets[0].data = payload_data.output;
 
               chartd_bottom.data.labels = Array.from(
-                new Array(payload.storage.length),
+                new Array(payload_data.demand.length),
                 (x, i) => i + 1
               ); //[...Array(inputdata.length).keys()];
 
-              chartd_bottom.data.datasets[0].data = payload.storage;
+              chartd_bottom.data.datasets[0].data = payload_data.demand;
 
               this.createChart("mainCanvas", chartd_top);
               this.createChart("mainCanvas2", chartd_middle);

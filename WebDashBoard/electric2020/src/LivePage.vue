@@ -20,6 +20,8 @@ import LivecardProsumer from "./LiveCard.vue";
 import { EventBus } from "./event-bus.js";
 import axios from "axios";
 
+import IP from "../static/setting.json"
+
 export default {
   components: {
     LiveCardProsumer: LivecardProsumer,
@@ -38,7 +40,8 @@ export default {
     getInterval() {
       //console.log('why!');
       var vm = this;
-      axios.get("http://127.0.0.1:7272/prosumer/getdetaillive").then((res) => {
+      IP.IP
+      axios.get("http://" + IP.IP + ":7272/prosumer/getdetaillive").then((res) => {
         console.log(res);
 
         if (res.data.status == true) {
@@ -73,7 +76,7 @@ export default {
     });
     console.log("Mouted");
 
-    axios.get("http://127.0.0.1:7272/prosumer/all").then((res) => {
+    axios.get("http://" + IP.IP + ":7272/prosumer/all").then((res) => {
       console.log(res.data);
       if (res.data.status == true) {
         vm.prosumerList = res.data.payload;

@@ -33,6 +33,7 @@
 import Chart from "chart.js";
 import axios from "axios";
 import MainRight from './MainRight.vue'
+import IP from '../static/setting.json'
 
 let chartd_top = {
   type: "line",
@@ -139,7 +140,7 @@ export default {
     timeRange(index) {
       let insertKey = this.timekey[index];
       axios
-        .get("http://127.0.0.1:7272/prosumer/getmainlive", {
+        .get("http://" + IP.IP + ":7272/prosumer/getmainlive", {
           params: { time: insertKey },
         })
         .then((res) => {
@@ -186,7 +187,7 @@ export default {
   mounted() {
     ///var vm = this;
     axios
-      .get("http://127.0.0.1:7272/prosumer/getmainlive", {
+      .get("http://" + IP.IP + ":7272/prosumer/getmainlive", {
         params: { time: "1d" },
       })
       .then((res) => {

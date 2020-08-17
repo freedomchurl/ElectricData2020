@@ -19,7 +19,7 @@
 import cardProsumer from "./ProsumerCard.vue";
 import { EventBus } from "./event-bus.js";
 import axios from "axios";
-
+import IP from '../static/setting.json'
 export default {
   components: {
     CardProsumer: cardProsumer,
@@ -49,7 +49,7 @@ export default {
   mounted() {
     console.log("Mouted");
     const vm = this;
-    axios.get("http://127.0.0.1:7272/prosumer/all").then((res) => {
+    axios.get("http://" + IP.IP + ":7272/prosumer/all").then((res) => {
       console.log(res.data);
       if (res.data.status == true) {
         vm.prosumerList = res.data.payload;
