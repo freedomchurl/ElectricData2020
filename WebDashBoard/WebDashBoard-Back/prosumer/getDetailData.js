@@ -55,20 +55,24 @@ var getDetail = function (req, res) {
                             }
                             else {
                                 // 여기서 데이터를 가공해야 한다.
-                                let avg_sales = 0;
+                                let avg_sales_ex = 0;
+                                let avg_sales_town = 0;
                                 let avg_town = 0;
                                 let avg_ex = 0;
+                                
                                 for (let i = 0; i < result.length; i++) {
-                                    avg_sales += result[i].sales;
+                                    avg_sales_ex += result[i].sales_ex;
+                                    avg_sales_town += result[i].sales_town;
                                     avg_town += result[i].purchase_town;
                                     avg_ex += result[i].purchase_ex;
                                 }
                                 if (result.length != 0) {
                                     avg_ex = avg_ex / result.length;
                                     avg_town = avg_town / result.length;
-                                    avg_sales = avg_sales / result.length;
+                                    avg_sales_ex = avg_sales_ex / result.length;
+                                    avg_sales_town = avg_sales_town / result.length;
                                 }
-                                let output = { avg_sales: avg_sales, avg_town: avg_town, avg_ex: avg_ex, data: result }
+                                let output = { avg_sales_town:avg_sales_town, avg_sales_ex: avg_sales_ex, avg_town: avg_town, avg_ex: avg_ex, data: result }
                                 res.send({ status: true, payload:{input:input,output:output} });
                             }
                         });
