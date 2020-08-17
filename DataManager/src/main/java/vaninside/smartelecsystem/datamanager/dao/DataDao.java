@@ -41,7 +41,7 @@ public class DataDao{
 	private String driver = "com.mysql.cj.jdbc.Driver";
 	//private String url = "jdbc:mysql://localhost:3306/electric_data?serverTimezone=UTC&characterEncoding=UTF-8";
 	//private String url = "jdbc:mysql://49.50.175.17:3306/electric_data?serverTimezone=UTC&characterEncoding=UTF-8";
-	private String url = "jdbc:mysql://49.50.175.17:3306/electric_data?serverTimezone=UTC&characterEncoding=UTF-8";
+	private String url = "jdbc:mysql://49.50.167.74:3306/electric_data?serverTimezone=Asia/Seoul&characterEncoding=UTF-8";
 	
 	private String userid = "root";
 	private String userpw = "password";
@@ -50,6 +50,8 @@ public class DataDao{
 		
 	 @Autowired
 	 RedisTemplate<String, Object> redisTemplate;
+	 
+	 
 	 
 	private Connection conn = null;
 	private PreparedStatement pstmt_1 = null;
