@@ -44,7 +44,7 @@ var getDetail = function (req, res) {
                     let input = { avg_output: avg_output, avg_demand: avg_demand, avg_storage: avg_storage, data: result }
                     //res.send({ status: true, payload:payload });
 
-                    var exec = conn.query('select sales,purchase_town,purchase_ex from controldata ' +
+                    var exec = conn.query('select sales_ex,sales_town,purchase_town,purchase_ex from controldata ' +
                         'where pID=? and timestampdiff(month,time,NOW()) <= 0 order by time', pID, function (err, result) {
                             conn.release();
 

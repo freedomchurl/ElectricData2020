@@ -38,6 +38,8 @@ router.get('/getmainlive',getMainLive);
 
 router.get('/getdetaillive',getDetailLive);
 
+///
+
 router.get('/predictall',predictAll);
 
 
