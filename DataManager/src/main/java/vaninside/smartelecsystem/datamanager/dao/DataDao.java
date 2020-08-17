@@ -36,20 +36,23 @@ import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class DataDao implements IDataDao{
+public class DataDao{
 	// MySQL Info
 	private String driver = "com.mysql.cj.jdbc.Driver";
-	private String url = "jdbc:mysql://localhost:3306/electric_data?serverTimezone=UTC&characterEncoding=UTF-8";
+	//private String url = "jdbc:mysql://localhost:3306/electric_data?serverTimezone=UTC&characterEncoding=UTF-8";
 	//private String url = "jdbc:mysql://49.50.175.17:3306/electric_data?serverTimezone=UTC&characterEncoding=UTF-8";
+	private String url = "jdbc:mysql://49.50.167.74:3306/electric_data?serverTimezone=Asia/Seoul&characterEncoding=UTF-8";
 	
 	private String userid = "root";
 	private String userpw = "password";
 	
-	private static int MAX_SIZE = 50; // 데이터 만료 시간
+	private static int MAX_SIZE = 72; // 데이터 만료 시간
 		
 	 @Autowired
 	 RedisTemplate<String, Object> redisTemplate;
-
+	 
+	 
+	 
 	private Connection conn = null;
 	private PreparedStatement pstmt_1 = null;
 	private PreparedStatement pstmt_2 = null;
@@ -67,7 +70,7 @@ public class DataDao implements IDataDao{
 		}
 	}
 	
-	@Override
+	
 	public boolean insertInput(String msg) {
 		JSONParser parser = new JSONParser();
 		JSONObject obj = new JSONObject();
@@ -81,6 +84,23 @@ public class DataDao implements IDataDao{
 		
 		String sql = "INSERT INTO userdata (pID, output, demand, storage) VALUES (?,?,?,?)";
 		try {
+			// Redis
+			ListOperations<String, Object> values = redisTemplate.opsForList();
+
+			values.leftPush("prosumer:"+(String) obj.get("pID")+":output", (Double) obj.get("output"));
+			values.leftPush("prosumer:"+(String) obj.get("pID")+":demand", (Double) obj.get("demand"));
+			values.leftPush("prosumer:"+(String) obj.get("pID")+":user_storage", (Double) obj.get("storage"));
+			
+			//System.out.println(values.range("prosumer:"+(String) obj.get("pID")+":output", 0, -1).toString());
+			
+			// 6시간 이후 만료.
+			if(values.size((String) obj.get("pID") +  ":output") >= MAX_SIZE ) {
+				values.rightPop("prosumer:"+(String) obj.get("pID")+":output");
+				values.rightPop("prosumer:"+(String) obj.get("pID")+":demand");
+				values.rightPop("prosumer:"+(String) obj.get("pID")+":user_storage");
+				//System.out.println(values.range("testOutput", 0, -1));
+			}
+			
 			pstmt_1 = conn.prepareStatement(sql);
 			pstmt_1.setString(1, (String) obj.get("pID"));
 			pstmt_1.setDouble(2, (Double) obj.get("output"));
@@ -90,22 +110,6 @@ public class DataDao implements IDataDao{
 			
 			pstmt_1.close();
 			
-			ListOperations<String, Object> values = redisTemplate.opsForList();
-			
-			values.leftPush("prosumer:"+(String) obj.get("pID")+":output", (Double) obj.get("output"));
-			values.leftPush("prosumer:"+(String) obj.get("pID")+":demand", (Double) obj.get("demand"));
-			values.leftPush("prosumer:"+(String) obj.get("pID")+":user_storage", (Double) obj.get("storage"));
-			
-			System.out.println(values.range("testOutput", 0, -1));
-			
-			// 6시간 이후 만료.
-			if(values.size((String) obj.get("pID") +  ":output") >= MAX_SIZE ) {
-				values.rightPop("prosumer:"+(String) obj.get("pID")+":output");
-				values.rightPop("prosumer:"+(String) obj.get("pID")+":demand");
-				values.rightPop("prosumer:"+(String) obj.get("pID")+":user_storage");
-				System.out.println(values.range("testOutput", 0, -1));
-			}
-			
 			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -113,7 +117,7 @@ public class DataDao implements IDataDao{
 		}
 	}
 
-	@Override
+	
 	public boolean insertOutput(String msg) {
 		JSONParser parser = new JSONParser();
 		JSONObject obj = new JSONObject();
@@ -127,23 +131,8 @@ public class DataDao implements IDataDao{
 		
 		String sql = "INSERT INTO controldata (pID, storage, sales, purchase_town, purchase_ex) VALUES (?,?,?,?,?)";
 		try {
-			pstmt_2 = conn.prepareStatement(sql);
 			
-			pstmt_2.setString(1, (String) obj.get("pID"));
-			pstmt_2.setDouble(2, (Double) obj.get("storage"));
-			pstmt_2.setDouble(3, (Double) obj.get("sales"));
-			pstmt_2.setDouble(4, (Double) obj.get("purchase_town"));
-			pstmt_2.setDouble(5, (Double) obj.get("purchase_ex"));
-			pstmt_2.executeUpdate();
-			
-			pstmt_2.close();
-			
-			// Redis
-
-			SimpleDateFormat format1 = new SimpleDateFormat ( "yyyyMMddmmss");
-			Date curtime = new Date();
-			String time1 = format1.format(curtime);
-			
+			//Redis
 			ListOperations<String, Object> values = redisTemplate.opsForList();
 			
 			values.leftPush("prosumer:"+(String) obj.get("pID")+":sales", (Double) obj.get("sales"));
@@ -159,9 +148,21 @@ public class DataDao implements IDataDao{
 				values.rightPop("prosumer:"+(String) obj.get("pID")+":purchase_town");
 				values.rightPop("prosumer:"+(String) obj.get("pID")+":purchase_ex");
 				values.rightPop("prosumer:"+(String) obj.get("pID")+":control_storage");
-				System.out.println(values.range("testOutput", 0, -1));
+				//System.out.println(values.range("testOutput", 0, -1));
+				
 			}
-	        
+			
+			pstmt_2 = conn.prepareStatement(sql);
+			
+			pstmt_2.setString(1, (String) obj.get("pID"));
+			pstmt_2.setDouble(2, (Double) obj.get("storage"));
+			pstmt_2.setDouble(3, (Double) obj.get("sales"));
+			pstmt_2.setDouble(4, (Double) obj.get("purchase_town"));
+			pstmt_2.setDouble(5, (Double) obj.get("purchase_ex"));
+			pstmt_2.executeUpdate();
+			
+			pstmt_2.close();
+			
 			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();

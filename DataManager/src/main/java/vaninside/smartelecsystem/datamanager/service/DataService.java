@@ -1,6 +1,8 @@
 package vaninside.smartelecsystem.datamanager.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.paho.client.mqttv3.IMqttClient;
@@ -11,8 +13,12 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpEntity;
@@ -35,19 +41,24 @@ import vaninside.smartelecsystem.datamanager.controller.DataController;
 import vaninside.smartelecsystem.datamanager.dao.DataDao;
 
 @Service
-public class DataService implements IDataService{
+public class DataService{
 
-	public static String topic = "topic2";
+	public static ArrayList<String> input;
+	public static int PROSUMER_NUM = 10;
 	
 	@Autowired
 	DataDao dao;
 	
-	@Override
-	public boolean sendControlData(String msg) {
+	public DataService() {
+		input = new ArrayList<>();
+	}
+	
+	public boolean sendControlData(String msg, String pID) {
+		System.out.println(msg);
 		MqttMessage mqttMessage = new MqttMessage();
 		mqttMessage.setPayload(msg.getBytes());
 		try {
-			DataController.instance.publish(topic, mqttMessage);
+			DataController.instance.publish("topic"+pID, mqttMessage);
 		} catch (MqttPersistenceException e) {
 			e.printStackTrace();
 			return false;
@@ -55,29 +66,67 @@ public class DataService implements IDataService{
 			e.printStackTrace();
 			return false;
 		}
-		
-		return dao.insertOutput(msg);
+		dao.insertOutput(msg);
+		return true;
 	}
 	
-	public String predict(String msg) throws JsonProcessingException{
-
-		System.out.println(msg);
+	public String predict() throws JsonProcessingException{
+		JSONArray jsonArray = new JSONArray();
+		for (int i = 0; i < input.size(); i++)//배열
+		{
+		JSONParser parser = new JSONParser();
+		Object obj;
+		try {
+			obj = parser.parse( input.get(i) );
+			JSONObject jsonObj = (JSONObject) obj;
+			jsonArray.add(obj);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		}
+		
+		//System.out.println(input.get(0));
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		RestTemplate restTemplate = new RestTemplate();
 		
 		String url = "http://localhost:5000/predict";
 		
-		HttpEntity<String> entity = new HttpEntity<>(msg,headers);
+		HttpEntity<JSONArray> entity = new HttpEntity<>(jsonArray,headers);
 		String answer = restTemplate.postForObject(url, entity, String.class);
-		
 		System.out.println(answer);
-		
-		return answer;
+		answer = answer.replaceAll("'", "\"");
+		JSONParser jsonP = new JSONParser();
+		try {
+			JSONArray jsonObj = (JSONArray) jsonP.parse(answer);
+			
+			for(int i=0;i<jsonObj.size();i++) {
+				JSONObject obj = (JSONObject) jsonObj.get(i);
+				System.out.println(jsonObj.get(i));
+				sendControlData(jsonObj.get(i).toString(), (String) obj.get("pID"));
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
+		
+		//ResponseEntity responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, JSONArray.class);
+        //System.out.println(responseEntity.getBody());
+		//List result = (List) responseEntity.getBody();
+//		HttpEntity<JSONArray> response = restTemplate.exchange("url",HttpMethod.POST, null, new ParameterizedTypeReference<JSONArray>() {}); 
+//		System.out.println(response.getBody());
+		//List<String> list = response.getBody();
+
+		//System.out.println("hi");
+		//System.out.println(list.size());
+		//System.out.println("//" + answer);
+		return null;
 	}
 
-	@Override
+	
 	public boolean control(String msg) {
 		String controlData;
 		// userData 저장
@@ -85,14 +134,18 @@ public class DataService implements IDataService{
 		if(result) {
 			// control Data 요청
 			try {
-				controlData = predict(msg);
+				input.add(msg);
+
+				System.out.println(2);
+				if(input.size() % PROSUMER_NUM == 0) {
+					predict();
+				}
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 				return false;
 			}
-			// control Data 저장
-			 return sendControlData(controlData);
 		}
 		else return false;
+		return true;
 	}	
 }
