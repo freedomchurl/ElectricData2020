@@ -415,6 +415,7 @@ div#flexbox {
   width: 3rem;
 }
 canvas{
+  width: 100%;
   background-color: white;
   /* padding: 1rem 1rem 1rem 1rem; */
 }

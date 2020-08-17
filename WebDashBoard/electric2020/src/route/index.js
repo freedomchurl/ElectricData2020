@@ -5,6 +5,7 @@ import MainPage from '../Main.vue'
 import ProsumerList from '../ProsumerList.vue'
 import ProsumerCardDetail from '../ProsumerCardDetail.vue'
 import LivePage from '../LivePage.vue'
+import PredictPage from '../PredictPage.vue'
 
 Vue.use(VueRouter)
 
@@ -25,6 +26,10 @@ const route = [
     {
       path:'/live',
       component:LivePage,
+    },
+    {
+      path:'/predict',
+      component:PredictPage,
     },
     {
       path:'/prosumer',

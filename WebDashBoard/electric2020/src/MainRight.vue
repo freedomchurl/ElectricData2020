@@ -109,7 +109,7 @@ export default {
               let payload = res.data.payload;
               vm.prosumerdata = payload;
 
-              vm.controller = setInterval(vm.getInterval, 60000); // 30초 마다 반복
+              vm.controller = setInterval(vm.getInterval, 2000); // 30초 마다 반복
             }
           });
       }

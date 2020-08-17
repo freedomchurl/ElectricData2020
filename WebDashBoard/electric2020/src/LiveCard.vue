@@ -127,5 +127,6 @@ export default {
 }
 canvas {
   background-color: white;
+  width: 100%;
 }
 </style>
