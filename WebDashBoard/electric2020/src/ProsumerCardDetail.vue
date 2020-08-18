@@ -282,9 +282,9 @@ export default {
                 chartd_left.data.datasets[1].data = i_demandArr;
                 chartd_left.data.datasets[2].data = i_storageArr;
                
-                chartd_right.data.datasets[0].data = o_salesArr;
+                chartd_right.data.datasets[0].data = o_townArr;
                 chartd_right.data.datasets[1].data = o_exArr;
-                chartd_right.data.datasets[2].data = o_townArr;
+                chartd_right.data.datasets[2].data = o_salesArr;
 
                 console.log(i_demandArr);
                 console.log(o_salesArr);
