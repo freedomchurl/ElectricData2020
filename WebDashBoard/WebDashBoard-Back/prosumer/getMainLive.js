@@ -50,9 +50,9 @@ var getDetail = function (req, res) {
                     let sum_demand = 0;
                     let sum_user_storage = 0;
                     for (var j = 0; j < USERNUM; j++) {
-                        sum_output += parseFloat(result[j * 3][i]);
-                        sum_demand += parseFloat(result[j * 3 + 1][i]);
-                        sum_user_storage += parseFloat(result[j * 3 + 2][i]);
+                        sum_output += parseFloat(result[j * 3][i]).toFixed(3);
+                        sum_demand += parseFloat(result[j * 3 + 1][i]).toFixed(3);
+                        sum_user_storage += parseFloat(result[j * 3 + 2][i]).toFixed(3);
                     }
                     avg_output[i] = sum_output / USERNUM;
                     avg_demand[i] = sum_demand / USERNUM;
