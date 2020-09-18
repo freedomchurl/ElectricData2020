@@ -63,6 +63,7 @@ public class DataDao{
 			// JDBC
 			Class.forName(driver);
 			conn = DriverManager.getConnection(url, userid, userpw);
+			
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -94,12 +95,13 @@ public class DataDao{
 			//System.out.println(values.range("prosumer:"+(String) obj.get("pID")+":output", 0, -1).toString());
 			
 			// 6시간 이후 만료.
-			if(values.size((String) obj.get("pID") +  ":output") >= MAX_SIZE ) {
+			if(values.size("prosumer:"+ (String) obj.get("pID") +  ":output") > MAX_SIZE ) {
 				values.rightPop("prosumer:"+(String) obj.get("pID")+":output");
 				values.rightPop("prosumer:"+(String) obj.get("pID")+":demand");
 				values.rightPop("prosumer:"+(String) obj.get("pID")+":user_storage");
 				//System.out.println(values.range("testOutput", 0, -1));
 			}
+			
 			
 			pstmt_1 = conn.prepareStatement(sql);
 			pstmt_1.setString(1, (String) obj.get("pID"));
@@ -129,13 +131,16 @@ public class DataDao{
 			return false;
 		}
 		
-		String sql = "INSERT INTO controldata (pID, storage, sales, purchase_town, purchase_ex) VALUES (?,?,?,?,?)";
+		String sql = "INSERT INTO controldata (pID, storage, sales_ex, sales_town, purchase_town, purchase_ex) VALUES (?,?,?,?,?,?)";
 		try {
+			
 			
 			//Redis
 			ListOperations<String, Object> values = redisTemplate.opsForList();
 			
-			values.leftPush("prosumer:"+(String) obj.get("pID")+":sales", (Double) obj.get("sales"));
+			values.leftPush("prosumer:"+(String) obj.get("pID")+":sales_town", (Double) obj.get("sales_ex"));
+			values.leftPush("prosumer:"+(String) obj.get("pID")+":sales_ex", (Double) obj.get("sales_town"));
+			
 			values.leftPush("prosumer:"+(String) obj.get("pID")+":purchase_town", (Double) obj.get("purchase_town"));
 			values.leftPush("prosumer:"+(String) obj.get("pID")+":purchase_ex", (Double) obj.get("purchase_ex"));
 			values.leftPush("prosumer:"+(String) obj.get("pID")+":control_storage", (Double) obj.get("storage"));
@@ -143,8 +148,9 @@ public class DataDao{
 			//System.out.println(values.range("testOutput", 0, -1));
 			
 			// 6시간 이후 만료.
-			if(values.size((String) obj.get("pID") +  ":output") >= MAX_SIZE ) {
-				values.rightPop("prosumer:"+(String) obj.get("pID")+":sales");
+			if(values.size((String) obj.get("pID") +  ":output") > MAX_SIZE ) {
+				values.rightPop("prosumer:"+(String) obj.get("pID")+":sales_ex");
+				values.rightPop("prosumer:"+(String) obj.get("pID")+":sales_town");
 				values.rightPop("prosumer:"+(String) obj.get("pID")+":purchase_town");
 				values.rightPop("prosumer:"+(String) obj.get("pID")+":purchase_ex");
 				values.rightPop("prosumer:"+(String) obj.get("pID")+":control_storage");
@@ -156,9 +162,10 @@ public class DataDao{
 			
 			pstmt_2.setString(1, (String) obj.get("pID"));
 			pstmt_2.setDouble(2, (Double) obj.get("storage"));
-			pstmt_2.setDouble(3, (Double) obj.get("sales"));
-			pstmt_2.setDouble(4, (Double) obj.get("purchase_town"));
-			pstmt_2.setDouble(5, (Double) obj.get("purchase_ex"));
+			pstmt_2.setDouble(3, (Double) obj.get("sales_ex"));
+			pstmt_2.setDouble(4, (Double) obj.get("sales_town"));
+			pstmt_2.setDouble(5, (Double) obj.get("purchase_town"));
+			pstmt_2.setDouble(6, (Double) obj.get("purchase_ex"));
 			pstmt_2.executeUpdate();
 			
 			pstmt_2.close();

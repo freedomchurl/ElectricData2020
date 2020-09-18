@@ -17,9 +17,9 @@ function randomCreator(){
   d = 1-a-b-c
 
   result.push(a)
-    result.push(b)
-      result.push(c)
-        result.push(d)
+  result.push(b)
+  result.push(c)
+  result.push(d)
 
         return result
 }
@@ -68,7 +68,7 @@ function randomCreator(){
           .then(content =>{
         var client  = mqtt.connect('mqtt://localhost');
         const options = {
-          host: '127.0.0.1',
+          host: 'localhost',
           port: 1883,
           protocol: 'mqtts',
           //username:"root",
@@ -79,14 +79,20 @@ function randomCreator(){
 
         var storage = Math.random()*100 + 200; // 초기 저장량
         var timeslot = 0
+        var randomNum = Math.random()*100 + 200 // 생산량, 수요량 랜덤 넙버
         // second minute hour day-of-month month day-of-week
-        cron.schedule('55 * * * * *', function(){
+        cron.schedule('*/13 * * * * *', function(){
           //output = Math.random();
           //demand = Math.random();
           thisRand = randomCreator()
 
           output = thisRand[0]*output_arr[0][timeslot] + thisRand[1]*output_arr[1][timeslot] + thisRand[2]*output_arr[2][timeslot] + thisRand[3]*output_arr[3][timeslot]
           demand = thisRand[0]*demand_arr[0][timeslot] + thisRand[1]*demand_arr[1][timeslot] + thisRand[2]*demand_arr[2][timeslot] + thisRand[3]*demand_arr[3][timeslot]
+
+          //console.log(randomNum)
+          output = output * randomNum
+          demand = demand * randomNum
+
 //console.log(thisRand[0] + " " + output_arr[0][timeslot]  + " " +  thisRand[1]  + " " +  output_arr[1][timeslot])
 //console.log(thisRand[0] + " " + demand_arr[0][timeslot]  + " " +  thisRand[1] + " " + demand_arr[1][timeslot])
           timeslot += 1;
@@ -123,7 +129,7 @@ function randomCreator(){
               console.log("\n\nPROSUMER 01");
           }
 
-            console.log("connected"+ client.connected + " PROSUMER" + cluster.worker.id);
+            //console.log("connected"+ client.connected + " PROSUMER" + cluster.worker.id);
           //if(cluster.worker.id == 1)
             //console.log("connected"+ client.connected + " PROSUMER" + cluster.worker.id);
         })
@@ -135,6 +141,8 @@ function randomCreator(){
             const obj = JSON.parse(message);
           	//console.log("Conrol Message is "+ message);  console.log("\n제어 데이터");
             if(obj.pID == String(cluster.worker.id)){
+
+                              console.log("\n제어 데이터");
                 console.log("---------------------------------------")
                 console.log("타운 내 판매량 | " + obj.sales_town);
                 console.log("전력거래소 판매량 | " + obj.sales_ex);

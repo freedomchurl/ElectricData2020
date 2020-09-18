@@ -45,6 +45,7 @@ public class DataService{
 
 	public static ArrayList<String> input;
 	public static int PROSUMER_NUM = 10;
+	public static int preData = 0;
 	
 	@Autowired
 	DataDao dao;
@@ -54,7 +55,7 @@ public class DataService{
 	}
 	
 	public boolean sendControlData(String msg, String pID) {
-		System.out.println(msg);
+		//System.out.println(msg);
 		MqttMessage mqttMessage = new MqttMessage();
 		mqttMessage.setPayload(msg.getBytes());
 		try {
@@ -81,13 +82,11 @@ public class DataService{
 			JSONObject jsonObj = (JSONObject) obj;
 			jsonArray.add(obj);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		}
 		
-		//System.out.println(input.get(0));
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		RestTemplate restTemplate = new RestTemplate();
@@ -108,21 +107,9 @@ public class DataService{
 				sendControlData(jsonObj.get(i).toString(), (String) obj.get("pID"));
 			}
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		
-		//ResponseEntity responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, JSONArray.class);
-        //System.out.println(responseEntity.getBody());
-		//List result = (List) responseEntity.getBody();
-//		HttpEntity<JSONArray> response = restTemplate.exchange("url",HttpMethod.POST, null, new ParameterizedTypeReference<JSONArray>() {}); 
-//		System.out.println(response.getBody());
-		//List<String> list = response.getBody();
-
-		//System.out.println("hi");
-		//System.out.println(list.size());
-		//System.out.println("//" + answer);
 		return null;
 	}
 
@@ -131,19 +118,24 @@ public class DataService{
 		String controlData;
 		// userData 저장
 		boolean result = dao.insertInput(msg);
+		preData += 1;
+		//System.out.println(preData);
+		// && preData > (72 * PROSUMER_NUM)
 		if(result) {
 			// control Data 요청
 			try {
 				input.add(msg);
 
-				System.out.println(2);
-				if(input.size() % PROSUMER_NUM == 0) {
+				if(input.size() == PROSUMER_NUM) {
 					predict();
+					input.clear();
 				}
+				
 			} catch (JsonProcessingException e) {
 				e.printStackTrace();
 				return false;
 			}
+			
 		}
 		else return false;
 		return true;

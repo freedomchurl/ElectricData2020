@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -36,43 +37,51 @@ public class DataController {
 	public static String topic = "topic";
 	
 	private static final String MQTT_PUBLISHER_ID = "electric-data-server";
-    private static final String MQTT_SERVER_ADDRES= "tcp://127.0.0.1:1883";
+    private static final String MQTT_SERVER_ADDRES= "tcp://localhost:1883";
+    
     public static IMqttClient instance;
    
-
+    
 	public DataController() throws MqttException{
 		init();	
 	}
 	
-	public void init() throws MqttException{
+	public void init(){
 		// Mqtt Initialize
         if (instance == null) {
-            instance = new MqttClient(MQTT_SERVER_ADDRES, MQTT_PUBLISHER_ID);                
+            try {
+				instance = new MqttClient(MQTT_SERVER_ADDRES, MQTT_PUBLISHER_ID);
+				
+				MqttConnectOptions options = new MqttConnectOptions();
+		        options.setAutomaticReconnect(true);
+		        options.setCleanSession(true);
+		        options.setConnectionTimeout(10);
+
+		        if (!instance.isConnected()) {
+		            instance.connect(options);
+		            instance.setCallback(new MqttCallback() {
+						@Override
+						public void connectionLost(Throwable cause) {}
+
+						@Override
+						public void messageArrived(String topic, MqttMessage message) throws Exception {
+							System.out.println(message.toString());
+							control(message.toString());
+						}
+
+						@Override
+						public void deliveryComplete(IMqttDeliveryToken token) {}
+		            }); 
+		        }
+		        // Subscribe to topic
+		        instance.subscribe(topic);
+			} catch (MqttException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}                
         }
 
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setAutomaticReconnect(true);
-        options.setCleanSession(true);
-        options.setConnectionTimeout(10);
-
-        if (!instance.isConnected()) {
-            instance.connect(options);
-            instance.setCallback(new MqttCallback() {
-				@Override
-				public void connectionLost(Throwable cause) {}
-
-				@Override
-				public void messageArrived(String topic, MqttMessage message) throws Exception {
-					System.out.println(message.toString());
-					control(message.toString());
-				}
-
-				@Override
-				public void deliveryComplete(IMqttDeliveryToken token) {}
-            }); 
-        }
-        // Subscribe to topic
-        instance.subscribe(topic);
+        
 	}
 
 	

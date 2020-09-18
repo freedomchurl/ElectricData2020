@@ -42,11 +42,12 @@ create table prosumer_info(pID int auto_increment, name varchar(100), memo varch
 | 컬럼명        | 내용                  | 설명                     |
 | ------------- | --------------------- | ------------------------ |
 | pID           | prosumer id           | foreign key              |
-| sales         | 판매량                | double                   |
+| sales_town    | 타운 내 판매량        | double                   |
+| sales_ex      | 전력거래소 판매량     | double                   |
 | storage       | 저장량                | double                   |
 | purchase_town | 타운 내 구매량        | double                   |
 | purchase_ex   | 전력거래소부터 구매량 | double                   |
 | time          | 시간                  | timestamp, DEFAULT NOW() |
 
-- mysql> create table controldata (pID varchar(100), storage double, sales double, purchase_town double, purchase_ex double, time timestamp DEFAULT NOW());
+- mysql> create table controldata (pID varchar(100), storage double, sales_town double,sales_ex double, purchase_town double, purchase_ex double, time timestamp DEFAULT NOW());
 
