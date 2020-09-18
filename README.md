@@ -26,21 +26,27 @@ ___
 
 ![대시보드](https://github.com/freedomchurl/ElectricData2020/blob/master/%EC%A0%84%EB%A0%A5%EC%8B%9C%EC%8A%A4%ED%85%9C_%EB%8C%80%EC%8B%9C%EB%B3%B4%EB%93%9C.png)
 
-
-
-___
+---
 
 
 
 ### 데이터 흐름도 및 시스템 구조
 
-___
+---
+
+
 
 MQTT로 프로슈머와 통신하며, LSTM 과 직접 연구한 알고리즘을 통해 적절한 제어량을 계산하여 프로슈머들이 효율적으로 전력을 거래할 수 있도록 제어합니다. 
+
+서비스는 수집/제어를 담당하는 Spring Boot 서버, 딥러닝을 담당하는 Flask 서버, 대시보드를 담당하는 node.js express 서버로 구성되어 있습니다.
+
+실시간 분석을 위해 인메모리 데이터베이스 Redis를 사용하였으며, 프로슈머의 정보를 저장하기 위해 MySQL 데이터베이스를 사용하였습니다. 
 
 
 
 ![시스템 구조](https://github.com/freedomchurl/ElectricData2020/blob/master/%EC%A0%84%EB%A0%A5%EC%8B%9C%EC%8A%A4%ED%85%9C_%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90.PNG)
+
+
 
 
 
